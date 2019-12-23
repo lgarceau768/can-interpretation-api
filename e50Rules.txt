@@ -1,0 +1,19 @@
++
+0x08 -d:Dentist_Unit_Gateway
+0 -f:->B -d:Foot_Switch_Buttons
+0.0 -i=1:Starter_On
+0.1 -i=1:Axis_1_Down
+0.2 -i=1:Axis_1_Up
+0.3 -i=1:Stirrup_Switch
+0.4 -i=1:Chip-blower_air
+0.5 -i=1:Axis_2_Up
+0.6 -i=1:Axis_2_Down
+0.7 -i=1:Spray_Cooling
+1 -d:Foot_Control_Potentiometer -f:->D
+2 -f:->B
+2.0 -i=1:Foot_Control_Enabled -d:Foot_Control
+2.6 -i=1:Media_on_Y6_Active -d:Dentist_Unit_Gateway
+2.7 -i=1:Pressure_Monitor_Active -d:Dentist_Unit_Gateway
+5 -d:Hygiene -i=01:Hygiene_Cycle_Started -i=09:Germ_Reduction_Complete -i=01:Intensive_Germ_Reduction_Complete
+6 -d:Remaing_Cleaning_Time -f:->D
+7 -d:Battery_Foot_Control -i=0:Cable -i=1:Charge -i=2:Low -i=3:Very_Low -i=4:Empty

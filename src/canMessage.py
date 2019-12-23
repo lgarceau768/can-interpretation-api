@@ -36,8 +36,14 @@ class ByteRule:
             self.ifs[digit] = '%s:%s' % (what, then)
 
 class CanRule:
-    def __init__(self, canID, description, byteRules=None):
+    def __init__(self, canID, description, byteRules=None, canRules=None, complexRules=None):
         self.byteRules = {}
+        self.canRules = {}
+        self.complexRules = {}
+        if complexRules != None:
+            self.complexRules = complexRules
+        if canRules != None:
+            self.canRules = canRules
         if byteRules != None:
             self.byteRules = byteRules
         self.canID = canID
@@ -49,7 +55,38 @@ class CanRule:
 
     def parseCanMessage(self, dataBytes):
         messages = []
+
+        # complex rules convert the cases to binary and check for 1
+        # format 'ifThen':'byte#:byte#+1'
+        if len(self.complexRules) > 0:
+            for rule in self.complexRules:
+                # need to find what bytes to convert to binary
+                bytesConv = self.complexRules[rule].split('&')
+                value = False
+                data = dataBytes.strip().split(' ')
+                binaryValues = []
+                for i in range(0, len(data)):
+                    data[i] = cv.binLong(data[i])
+                for item in bytesConv:
+                    byte = int(item.split('.')[0])
+                    binaryDigit = int(item.split('.')[1])
+                    if data[byte][binaryDigit] == '0':
+                        value = False
+                    else:
+                        value = True
+                if value:
+                    messages.append(cv.json(self.description, rule))
+
+
+        # whole can rules
+        if len(self.canRules) > 0:
+            # loop through the can rules
+            for rule in self.canRules:
+                if dataBytes.strip() == rule:
+                    messages.append(cv.json(self.description, canRules[rule]))
         dataBytes = dataBytes.strip().split(' ')
+
+        # just data byte rules
         for i in range(0, len(dataBytes)):
             # 0-7 = total of 8 iterations
             try:
@@ -64,5 +101,8 @@ class CanRule:
         if len(messages) > 0:
             return messages
         return None
+
+
+
 
 

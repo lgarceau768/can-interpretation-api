@@ -33,14 +33,15 @@ def translate(canRule):
     canID = canRule[0].strip().split(' ')[0]
     canDescription = canRule[0].strip().split(' ')[1].replace(descriptionChar, '')
     byteRules = {}
+    canRules = {}
+    complexRules = {}
     byte = -1
     # now need to loop through the rest of the list and intepret what it says into a rule
     for i in range(1, len(canRule)):
         description = None
         function = None
-
         # need to split the rule up based on bytes
-        if '.' not in canRule[i]:
+        if '.' not in canRule[i] and '-c=' not in canRule[i] and '-o=' not in canRule[i]:
             line = canRule[i].strip().split(' ')
             byte = line[0]
             ifs = {}
@@ -60,6 +61,22 @@ def translate(canRule):
                 # need to add functionality for adding the if rule to a byte
                 byteRules[byte].addIf(what, ifs[what])
             
+
+        # need to also add something custom for checking if a can message is a straight thing
+        elif '-c=' in canRule[i]:
+            # -c='## ## ## ## ## ## ## ##':Description
+            line = canRule[i].strip().replace('-c=','').replace("'",'').split(':')
+            ifWhat = line[0]
+            ifThen = line[1]
+            canRules[ifWhat] = ifThen
+
+        elif '-o=' in canRule[i]:
+            line = canRule[i].strip().replace('-o=','').split(':')
+            bytesList = line[0]
+            ifWhat = line[1]
+            complexRules[ifWhat] = bytesList
+
+
 
         # can find the byte by finding the first line w/out a ".""
 
@@ -87,6 +104,6 @@ def translate(canRule):
                 byteRules[byte].addIf(what, ifs[what], digit=binaryDigit)   
 
     # need to create the can rule from the above byte rules
-    return canMessage.CanRule(canID, canDescription, byteRules=byteRules)
+    return canMessage.CanRule(canID, canDescription, byteRules=byteRules, canRules=canRules, complexRules=complexRules)
         
 

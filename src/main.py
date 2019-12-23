@@ -12,16 +12,19 @@ for canRule in canRulesFile:
     
 # now need to loop through the csv file and apply the rules above
 output = []
-with open('data.csv', 'r') as csvFile:
+with open('vision_data.txt', 'r') as csvFile:
     lines = csvFile.readlines()
-
+    # for vision
     for line in lines:
-        line = line.strip().replace(' ID: ','').replace(' Message: ',',').split(',')
+        line = line.strip().split(' ')
+        newList = []
+        for item in line:
+            if len(item) > 0:
+                newList.append(item)
+        line = newList
         timestamp = line[0]
-        canID = line[1]
-        canMessage = line[2]
-        # need to apply the rules to them
-        # will check to see if we have a rule for the can id
+        canID = '0x%s' % line[2]
+        canMessage = line[5:]
         try:
             rule = codeRules[canID]
             parsed = rule.parseCanMessage(canMessage)
@@ -29,6 +32,21 @@ with open('data.csv', 'r') as csvFile:
                 output.append(parsed)
         except:
             pass
+    # for e50
+    # for line in lines:
+    #     line = line.strip().replace(' ID: ','').replace(' Message: ',',').split(',')
+    #     timestamp = line[0]
+    #     canID = line[1]
+    #     canMessage = line[2]
+    #     # need to apply the rules to them
+    #     # will check to see if we have a rule for the can id
+    #     try:
+    #         rule = codeRules[canID]
+    #         parsed = rule.parseCanMessage(canMessage)
+    #         if parsed != None:
+    #             output.append(parsed)
+    #     except:
+    #         pass
     csvFile.close()
         
 with open('outFile.txt','w') as file:
